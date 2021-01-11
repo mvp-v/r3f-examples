@@ -1,14 +1,11 @@
 import {createRef, useRef} from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { Canvas, useFrame } from 'react-three-fiber'
+import { Canvas, extend, useFrame, useThree } from 'react-three-fiber'
 
-// Three JS documentation https://threejs.org/docs/
+extend({ OrbitControls });
 
 function Scene({
-  fov = 75,
-  near = 0.1,
-  far = 1000,
   color = 0x00ff00,
 }) {
   const exampleObjectRef = useRef();
@@ -18,28 +15,14 @@ function Scene({
     exampleObjectRef.current.rotation.y += 0.011;
   });
 
-  // componentDidMount() {
-  //   const {fov, near, far, color} = this.props;
-  //   this.scene = new THREE.Scene();
-  //   this.camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
-  //   this.renderer = new THREE.WebGLRenderer();
-  //   this.renderer.setSize(window.innerWidth, window.innerHeight);
-  //   this.geometry = new THREE.TorusKnotGeometry();
-  //   this.material = new THREE.MeshBasicMaterial( { color } );
-  //   this.exampleObject = new THREE.Mesh(this.geometry, this.material);
-  //   this.scene.add(this.exampleObject);
-  //   // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-  // }
+  const {
+    camera,
+    gl: { domElement },
+  } = useThree();
 
   return (
     <>
-      <perspectiveCamera
-        fov={fov}
-        near={near}
-        far={far}
-        aspect={window.innerWidth / window.innerHeight}
-        position={[0, 0, 5]}
-      />
+      <orbitControls args={[camera, domElement]} />
       <mesh ref={exampleObjectRef}>
         <torusKnotGeometry
           attach='geometry'
@@ -54,12 +37,23 @@ function Scene({
   );
 }
 
-export default function Example01() {
+export default function Example01({
+  fov = 75,
+  near = 0.1,
+  far = 1000,
+  cameraPos = [0, 0, 5],
+}) {
   return (
     <Canvas
-      width={window.innerWidth}
-      height={window.innerHeight}
+      style={{height: '100vh'}}
+      camera={{
+        fov,
+        near,
+        far,
+        position: cameraPos
+      }}
     >
+      <color attach='background' args={[0]} />
       <Scene />
     </Canvas>
   );

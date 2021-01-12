@@ -1,9 +1,8 @@
-import {createRef, useRef} from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { Canvas, extend, useFrame, useThree } from 'react-three-fiber'
+import {useRef} from 'react';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {Canvas, extend, useFrame, useThree} from 'react-three-fiber'
 
-extend({ OrbitControls });
+extend({OrbitControls});
 
 function Scene({
   color = 0x00ff00,
@@ -15,10 +14,7 @@ function Scene({
     exampleObjectRef.current.rotation.y += 0.011;
   });
 
-  const {
-    camera,
-    gl: { domElement },
-  } = useThree();
+  const {camera, gl: { domElement }} = useThree();
 
   return (
     <>

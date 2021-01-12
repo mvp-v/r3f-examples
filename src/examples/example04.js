@@ -1,47 +1,89 @@
-import {Suspense, useMemo, useState} from 'react';
+import {Suspense, useMemo, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {Canvas, extend, useLoader, useThree, useResource} from 'react-three-fiber'
-import {map, random, times} from 'lodash';
+import {Canvas, extend, useFrame, useLoader, useThree} from 'react-three-fiber'
+import {constant, random, times, sum} from 'lodash';
 import spriteImage from './disc.png';
 import * as THREE from 'three';
+import { Vector3 } from 'three';
 
 extend({OrbitControls});
 
-function Scene({pointCount = 4000, low = -100.0, high = 100.0}) {
+function gauss(m = 0, w = 1, n = 100) {
+  return m + w * sum(times(n, () => random(-1, 1, true))) / n;
+}
+
+function Scene({
+  pointCount = 4000,
+  low = -100.0,
+  high = 100.0,
+  maxSpeed = 2.0,
+  maxTtl = 300,
+  wide = 3,
+}) {
   const {camera, gl: { domElement }} = useThree();
   const spriteTexture = useLoader(THREE.TextureLoader, spriteImage);
-  const spriteMaterial = useResource();
 
-  const positions = useMemo(() => times(pointCount, () => [random(low, high), random(low, high), random(low, high)]), []);
+  const [positions, colors, speed, ttl] = useMemo(
+    () => [
+      new Float32Array(times(3 * pointCount, constant(0))),
+      new Float32Array(times(3 * pointCount, constant(0))),
+      times(pointCount, () => ({x: gauss(0, wide), y: random(1, maxSpeed, true), z: gauss(0, wide)})),
+      times(pointCount, () => random(0.1, maxTtl, true)),
+    ],
+    [pointCount, high, low]
+  );
+
+  const positionAttribute = useRef();
+  const colorsAttribute = useRef();
+
+  useFrame(() => {
+    for(let i = 1; i < pointCount; i++) {
+      positions[3 * i + 0] += speed[i].x;
+      positions[3 * i + 1] += speed[i].y;
+      positions[3 * i + 2] += speed[i].z;
+      if (positions[3 * i + 1] > ttl[i]) {
+        positions[3 * i + 0] = 0;
+        positions[3 * i + 1] = 0;
+        positions[3 * i + 2] = 0;  
+      }
+    }
+    positionAttribute.current.needsUpdate = true;
+    colorsAttribute.current.needsUpdate = true;
+    positionAttribute.current.parent.computeBoundingSphere();
+  });
+
   return (
     <>
       <orbitControls args={[camera, domElement]} />
-      <spriteMaterial
-        ref={spriteMaterial}
-        transparent
-        opacity={0.5}
-        attach='material'
-        color='red'
-        map={spriteTexture}
-      />
-      {map(positions,
-        (p, i) => (
-          <sprite
-            key={i}
-            position={p}
-            scale={[3, 3, 3]}
-            material={spriteMaterial.current}
-          >
-          </sprite>
-        )
-      )}
+      <points>
+        <bufferGeometry
+          attach='geometry'
+        >
+          <bufferAttribute
+            ref={positionAttribute}
+            attachObject={['attributes', 'position']}
+            array={positions}
+            itemSize={3}
+            count={pointCount}
+          />
+          <bufferAttribute
+            ref={colorsAttribute}
+            attachObject={['attributes', 'color']}
+            array={colors}
+            itemSize={3}
+            count={pointCount}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          transparent
+          attach='material'
+          map={spriteTexture}
+          color='orange'
+          size={10}
+        />
+      </points>
     </>
   );
-}
-
-function raycasterFilter(intersections) {
-  console.log({intersections});
-  return intersections.length ? [intersections[0]] : intersections;
 }
 
 export default function Example04({
@@ -61,13 +103,12 @@ export default function Example04({
         far: sceneSize,
         position: cameraPos
       }}
-      // raycaster={{
-      //   filter: raycasterFilter
-      // }}
     >
       <Suspense fallback={null}>
         <color attach='background' args={[0]} />
-        <Scene />
+        <group position={[0, -300, 0]}>
+          <Scene />
+        </group>
       </Suspense>
     </Canvas>
   );

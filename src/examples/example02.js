@@ -33,7 +33,7 @@ function Scene({
   );
 }
 
-export default function Example01({
+export default function Example02({
   fov = 75,
   near = 0.1,
   far = 1000,

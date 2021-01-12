@@ -1,4 +1,4 @@
-import Example from './examples/example02';
+import Example from './examples/example03';
 
 function App() {
   return (

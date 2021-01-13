@@ -24,6 +24,7 @@ export default class Example01 extends Component {
 
   componentDidMount() {
     const {fov, near, far, color} = this.props;
+    // https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
     this.renderer = new THREE.WebGLRenderer();

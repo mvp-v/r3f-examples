@@ -18,7 +18,6 @@ function Box(props) {
   const { color, scale } = useSpring({
     color: hovered ? 'red' : 'blue',
     scale: active ? [1.5, 1.5, 1.5] : [1, 1, 1],
-    config: { mass: 10, tension: 1000, friction: 300, precision: 0.00001 }
   })
 
   return (
@@ -26,9 +25,9 @@ function Box(props) {
       {...props}
       scale={scale}
       ref={mesh}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}
+      onClick={() => setActive(!active)}
+      onPointerOver={() => setHover(true)}
+      onPointerOut={() => setHover(false)}
     >
       <boxBufferGeometry args={[1, 1, 1]} />
       {/* play with materials https://threejs.org/examples/#webgl_materials_envmaps_exr */}

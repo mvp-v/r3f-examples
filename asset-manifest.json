@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/r3f-examples/static/css/main.2ae47eeb.chunk.css",
+    "main.js": "/r3f-examples/static/js/main.6f8fcc39.chunk.js",
+    "main.js.map": "/r3f-examples/static/js/main.6f8fcc39.chunk.js.map",
+    "runtime-main.js": "/r3f-examples/static/js/runtime-main.d88d7424.js",
+    "runtime-main.js.map": "/r3f-examples/static/js/runtime-main.d88d7424.js.map",
+    "static/js/2.6574bcc2.chunk.js": "/r3f-examples/static/js/2.6574bcc2.chunk.js",
+    "static/js/2.6574bcc2.chunk.js.map": "/r3f-examples/static/js/2.6574bcc2.chunk.js.map",
+    "static/js/3.91b332c3.chunk.js": "/r3f-examples/static/js/3.91b332c3.chunk.js",
+    "static/js/3.91b332c3.chunk.js.map": "/r3f-examples/static/js/3.91b332c3.chunk.js.map",
+    "index.html": "/r3f-examples/index.html",
+    "static/css/main.2ae47eeb.chunk.css.map": "/r3f-examples/static/css/main.2ae47eeb.chunk.css.map",
+    "static/js/2.6574bcc2.chunk.js.LICENSE.txt": "/r3f-examples/static/js/2.6574bcc2.chunk.js.LICENSE.txt",
+    "static/media/sprite.56b67e27.png": "/r3f-examples/static/media/sprite.56b67e27.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d88d7424.js",
+    "static/js/2.6574bcc2.chunk.js",
+    "static/css/main.2ae47eeb.chunk.css",
+    "static/js/main.6f8fcc39.chunk.js"
+  ]
+}

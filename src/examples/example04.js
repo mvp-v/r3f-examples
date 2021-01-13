@@ -5,6 +5,7 @@ import {constant, random, times, sum, forIn} from 'lodash';
 import spriteImage from './sprite.png';
 import * as THREE from 'three';
 
+import Stats from './Stats';
 import {fragmentShader, vertexShader} from './pointsShaders';
 
 extend({OrbitControls});
@@ -125,6 +126,7 @@ export default function Example04({
         position: cameraPos
       }}
     >
+      <Stats />
       <Suspense fallback={null}>
         <color attach='background' args={[0]} />
         <group position={[0, -300, 0]}>

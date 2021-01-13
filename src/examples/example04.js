@@ -2,7 +2,7 @@ import {Suspense, useMemo, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {Canvas, extend, useFrame, useLoader, useThree} from 'react-three-fiber'
 import {constant, random, times, sum, forIn} from 'lodash';
-import spriteImage from './disc.png';
+import spriteImage from './sprite.png';
 import * as THREE from 'three';
 
 import {fragmentShader, vertexShader} from './pointsShaders';

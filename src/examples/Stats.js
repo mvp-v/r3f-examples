@@ -8,7 +8,7 @@ export default function Stats() {
     stats.showPanel(0)
     document.body.appendChild(stats.dom)
     return () => document.body.removeChild(stats.dom)
-  }, [])
+  }, [stats])
   return useFrame(state => {
     stats.begin()
     state.gl.render(state.scene, state.camera)

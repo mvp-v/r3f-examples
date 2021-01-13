@@ -16,8 +16,6 @@ function gauss(m = 0, w = 1, n = 100) {
 
 function Scene({
   pointCount = 4000,
-  low = -100.0,
-  high = 100.0,
   maxSpeed = 2.0,
   maxTtl = 400,
   wide = 4,
@@ -34,7 +32,7 @@ function Scene({
       times(pointCount, () => ({x: gauss(0, wide), y: random(1, maxSpeed, true), z: gauss(0, wide)})),
       times(pointCount, () => random(0.1, maxTtl, true)),
     ],
-    [pointCount, high, low]
+    [pointCount, maxSpeed, maxTtl, wide]
   );
 
   const geometryRef = useRef();

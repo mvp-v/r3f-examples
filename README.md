@@ -1,4 +1,4 @@
-[View on github pages](http://mvp-v.github.io/r3f-examples)
+[View on github pages](https://mvp-v.github.io/r3f-examples/)
 
 # Getting Started with Create React App
 

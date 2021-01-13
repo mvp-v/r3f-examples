@@ -1,10 +1,11 @@
 import {Suspense, useMemo, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {Canvas, extend, useFrame, useLoader, useThree} from 'react-three-fiber'
-import {constant, random, times, sum} from 'lodash';
+import {constant, random, times, sum, forIn} from 'lodash';
 import spriteImage from './disc.png';
 import * as THREE from 'three';
-import { Vector3 } from 'three';
+
+import {fragmentShader, vertexShader} from './pointsShaders';
 
 extend({OrbitControls});
 
@@ -17,39 +18,44 @@ function Scene({
   low = -100.0,
   high = 100.0,
   maxSpeed = 2.0,
-  maxTtl = 300,
-  wide = 3,
+  maxTtl = 400,
+  wide = 4,
 }) {
   const {camera, gl: { domElement }} = useThree();
   const spriteTexture = useLoader(THREE.TextureLoader, spriteImage);
 
-  const [positions, colors, speed, ttl] = useMemo(
+  const [positions, colors, alphas, sizes, speed, ttl] = useMemo(
     () => [
       new Float32Array(times(3 * pointCount, constant(0))),
-      new Float32Array(times(3 * pointCount, constant(0))),
+      new Float32Array(times(3 * pointCount, constant(1))),
+      new Float32Array(times(pointCount, constant(0.5))),
+      new Float32Array(times(pointCount, constant(1))),
       times(pointCount, () => ({x: gauss(0, wide), y: random(1, maxSpeed, true), z: gauss(0, wide)})),
       times(pointCount, () => random(0.1, maxTtl, true)),
     ],
     [pointCount, high, low]
   );
 
-  const positionAttribute = useRef();
-  const colorsAttribute = useRef();
+  const geometryRef = useRef();
 
   useFrame(() => {
-    for(let i = 1; i < pointCount; i++) {
+    const color = new THREE.Color('red');
+    for(let i = 0; i < pointCount; i++) {
       positions[3 * i + 0] += speed[i].x;
       positions[3 * i + 1] += speed[i].y;
       positions[3 * i + 2] += speed[i].z;
+      color.setHSL(random(0.0, 0.06), 1, 0.5 + 0.5 * (1 - positions[3 * i + 1] / ttl[i]) ** 2);
+      color.toArray(colors, 3 * i);
       if (positions[3 * i + 1] > ttl[i]) {
-        positions[3 * i + 0] = 0;
-        positions[3 * i + 1] = 0;
-        positions[3 * i + 2] = 0;  
+        positions[3 * i + 0] = 
+          positions[3 * i + 1] = 
+            positions[3 * i + 2] = 0;  
       }
+      alphas[i] = (1 - positions[3 * i + 1] / ttl[i]) ** 2;
+      sizes[i] = 1 + 40 * (positions[3 * i + 1] / ttl[i]) ** 3;
     }
-    positionAttribute.current.needsUpdate = true;
-    colorsAttribute.current.needsUpdate = true;
-    positionAttribute.current.parent.computeBoundingSphere();
+    forIn(geometryRef.current.attributes, (attr) => attr.needsUpdate = true);
+    geometryRef.current.computeBoundingSphere();
   });
 
   return (
@@ -57,29 +63,44 @@ function Scene({
       <orbitControls args={[camera, domElement]} />
       <points>
         <bufferGeometry
+          ref={geometryRef}
           attach='geometry'
         >
           <bufferAttribute
-            ref={positionAttribute}
             attachObject={['attributes', 'position']}
             array={positions}
             itemSize={3}
             count={pointCount}
           />
           <bufferAttribute
-            ref={colorsAttribute}
-            attachObject={['attributes', 'color']}
+            attachObject={['attributes', 'customColor']}
             array={colors}
             itemSize={3}
             count={pointCount}
           />
+          <bufferAttribute
+            attachObject={['attributes', 'alpha']}
+            array={alphas}
+            itemSize={1}
+            count={pointCount}
+          />
+          <bufferAttribute
+            attachObject={['attributes', 'size']}
+            array={sizes}
+            itemSize={1}
+            count={pointCount}
+          />
         </bufferGeometry>
-        <pointsMaterial
+        <shaderMaterial
           transparent
           attach='material'
-          map={spriteTexture}
-          color='orange'
-          size={10}
+          uniforms={{
+            pointTexture: { value: spriteTexture },
+          }}
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          blending={THREE.AdditiveBlending}
+          depthTest={false}
         />
       </points>
     </>

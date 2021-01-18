@@ -46,6 +46,7 @@ export default function Example02({
         fov,
         near,
         far,
+        aspect: window.innerWidth / window.innerHeight,
         position: cameraPos
       }}
     >
